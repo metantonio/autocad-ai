@@ -54,6 +54,13 @@ python build_scripts/build_app.py
 ```
 The executable will be located in the `dist/` folder.
 
+### Configuration with .exe
+The compiled `.exe` will look for a `.env` file in the **same directory** where it is being executed. 
+- If no `.env` file is found, the assistant will fall back to its internal defaults:
+    - **OLLAMA_MODEL**: `llama3`
+    - **LLM_API_URL**: `http://localhost:11434`
+- You can copy your `.env` file into the `dist/` folder alongside the `CAD_AI_Assistant.exe` to customize its behavior.
+
 ## Project Structure
 - `src/cad/`: CAD connectors (AutoCAD COM).
 - `src/llm/`: LLM management and tool definitions.

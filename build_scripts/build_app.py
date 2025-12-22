@@ -11,6 +11,8 @@ def build():
         '--name=CAD_AI_Assistant',
         '--collect-all=comtypes',
         '--collect-all=ollama',
+        '--collect-all=pydantic',
+        '--collect-all=python-dotenv',
         '--hidden-import=src.cad.autocad_client',
         '--hidden-import=src.llm.llm_manager',
     ])

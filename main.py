@@ -13,6 +13,11 @@ def main():
 
     llm = LLMManager()
     
+    print(f"[*] Configuration Loaded:")
+    print(f"    - Model: {llm.model}")
+    print(f"    - API URL: {llm.api_url or 'Ollama Default (localhost:11434)'}")
+    print(f"    - CAD: AutoCAD (via COM)")
+    
     while True:
         try:
             user_input = input("\n[CAD AI] > ")
