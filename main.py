@@ -51,6 +51,16 @@ def main():
                         cad.add_spline(args['points'])
                     elif func_name == 'trim_entities':
                         cad.trim()
+                    elif func_name == 'list_layers':
+                        layers = cad.get_layers_info()
+                        # Add a second LLM pass to explain the layers to the user
+                        print(f"Retrieved {len(layers)} layers. Generating summary...")
+                        summary_prompt = f"The user asked about layers. Here is the technical data of the layers: {json.dumps(layers)}. Please summarize this for the user in a friendly way, highlighting which ones are off or locked."
+                        summary_response = llm.client.chat(
+                            model=llm.model,
+                            messages=[{'role': 'user', 'content': summary_prompt}]
+                        )
+                        print(f"\n[Layers Summary]:\n{summary_response['message']['content']}")
                     else:
                         print(f"Unsupported command: {func_name}")
                 except Exception as step_error:

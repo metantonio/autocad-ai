@@ -107,6 +107,17 @@ class LLMManager:
                         'properties': {},
                     },
                 },
+            },
+            {
+                'type': 'function',
+                'function': {
+                    'name': 'list_layers',
+                    'description': 'Get information about all layers in the drawing, including name, color, and status (on/off, frozen, locked).',
+                    'parameters': {
+                        'type': 'object',
+                        'properties': {},
+                    },
+                },
             }
         ]
 

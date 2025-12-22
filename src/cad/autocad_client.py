@@ -16,6 +16,10 @@ class AutoCADClient:
             "AutoCAD.Application.24",   # AutoCAD 2021
             "AutoCAD.Application.23.1", # AutoCAD 2020
             "AutoCAD.Application.23",   # AutoCAD 2019
+            "AutoCAD.Application.22",   # AutoCAD 2018
+            "AutoCAD.Application.21",   # AutoCAD 2017
+            "AutoCAD.Application.20.1", # AutoCAD 2016
+            "AutoCAD.Application.20",   # AutoCAD 2015
         ]
         
         last_error = None
@@ -73,6 +77,28 @@ class AutoCADClient:
         except Exception as e:
             print(f"Error adding spline: {e}")
             return None
+
+    def get_layers_info(self):
+        """Retrieve a list of layers and their properties."""
+        try:
+            if not self.doc:
+                return []
+            
+            layers_data = []
+            layers = self.doc.Layers
+            for i in range(layers.Count):
+                layer = layers.Item(i)
+                layers_data.append({
+                    "name": layer.Name,
+                    "is_on": layer.LayerOn,
+                    "is_frozen": layer.Freeze,
+                    "is_locked": layer.Lock,
+                    "color": layer.Color
+                })
+            return layers_data
+        except Exception as e:
+            print(f"Error retrieving layers: {e}")
+            return []
 
     def trim(self):
         """Invoke the TRIM command in AutoCAD. 
