@@ -28,6 +28,7 @@ To ensure a clean installation, it is recommended to use a Python virtual enviro
      ```
 5. **Install dependencies**:
    ```powershell
+   cp .env.example .env
    pip install -r requirements.txt
    ```
 

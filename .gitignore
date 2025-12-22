@@ -1,3 +1,6 @@
 __pycache__
 .env
 venv
+build
+CAD_AI_Assistant.spec   
+dist
