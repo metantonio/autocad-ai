@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 from src.cad.autocad_client import AutoCADClient
 from src.llm.llm_manager import LLMManager
 

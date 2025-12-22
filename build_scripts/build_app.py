@@ -15,6 +15,8 @@ def build():
         '--collect-all=pydantic',
         '--collect-all=python-dotenv',
         '--hidden-import=comtypes.gen',
+        '--hidden-import=comtypes.automation',
+        '--hidden-import=comtypes.typeinfo',
         '--hidden-import=win32com',
         '--hidden-import=src.cad.autocad_client',
         '--hidden-import=src.llm.llm_manager',
