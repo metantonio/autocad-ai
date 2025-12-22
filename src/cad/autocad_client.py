@@ -39,38 +39,49 @@ class AutoCADClient:
         print("Tip: Make sure AutoCAD is open and a drawing is active.")
         return False
 
+    def _normalize_point(self, point):
+        """Ensure point is a 3-tuple (x, y, z), defaulting z to 0.0 if missing."""
+        if len(point) == 2:
+            return (float(point[0]), float(point[1]), 0.0)
+        return (float(point[0]), float(point[1]), float(point[2]))
+
     def add_line(self, start_point, end_point):
-        """Add a line to the model space."""
+        """Add a line to the model space. Supports 2D and 3D points."""
         if not self.model_space:
             return None
-        # points are tuples (x, y, z)
-        return self.model_space.AddLine(comtypes.automation.VARIANT(start_point), 
-                                        comtypes.automation.VARIANT(end_point))
+        start = self._normalize_point(start_point)
+        end = self._normalize_point(end_point)
+        return self.model_space.AddLine(comtypes.automation.VARIANT(start), 
+                                        comtypes.automation.VARIANT(end))
 
     def add_circle(self, center, radius):
-        """Add a circle to the model space."""
+        """Add a circle to the model space. Supports 2D and 3D center."""
         if not self.model_space:
             return None
-        return self.model_space.AddCircle(comtypes.automation.VARIANT(center), radius)
+        norm_center = self._normalize_point(center)
+        return self.model_space.AddCircle(comtypes.automation.VARIANT(norm_center), radius)
 
     def add_point(self, point):
-        """Add a point to the model space."""
+        """Add a point to the model space. Supports 2D and 3D input."""
         if not self.model_space:
             return None
-        return self.model_space.AddPoint(comtypes.automation.VARIANT(point))
+        norm_point = self._normalize_point(point)
+        return self.model_space.AddPoint(comtypes.automation.VARIANT(norm_point))
 
     def add_arc(self, center, radius, start_angle, end_angle):
-        """Add an arc to the model space."""
+        """Add an arc to the model space. Supports 2D and 3D center."""
         if not self.model_space:
             return None
-        return self.model_space.AddArc(comtypes.automation.VARIANT(center), radius, start_angle, end_angle)
+        norm_center = self._normalize_point(center)
+        return self.model_space.AddArc(comtypes.automation.VARIANT(norm_center), radius, start_angle, end_angle)
 
     def add_spline(self, points):
-        """Add a spline to the model space from a list of points."""
+        """Add a spline to the model space from a list of 2D or 3D points."""
         try:
             if not self.model_space:
                 return None
-            flattened_points = [p for pt in points for p in pt]
+            normalized_points = [self._normalize_point(pt) for pt in points]
+            flattened_points = [coords for pt in normalized_points for coords in pt]
             start_tan = comtypes.automation.VARIANT([0.0, 0.0, 0.0])
             end_tan = comtypes.automation.VARIANT([0.0, 0.0, 0.0])
             return self.model_space.AddSpline(comtypes.automation.VARIANT(flattened_points), start_tan, end_tan)
