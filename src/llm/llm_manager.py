@@ -8,7 +8,7 @@ load_dotenv()
 
 class LLMManager:
     def __init__(self):
-        self.model = os.getenv("OLLAMA_MODEL", "llama3")
+        self.model = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
         self.api_url = os.getenv("LLM_API_URL")
         
         if self.api_url:
