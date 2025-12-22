@@ -25,13 +25,14 @@ class AutoCADClient:
         last_error = None
         for prog_id in prog_ids:
             try:
-                print(f"Trying to connect via {prog_id}...")
+                print(f"[*] Trying to connect via '{prog_id}'...")
                 self.app = comtypes.client.GetActiveObject(prog_id)
                 self.doc = self.app.ActiveDocument
                 self.model_space = self.doc.ModelSpace
-                print(f"Successfully connected to AutoCAD via {prog_id}.")
+                print(f"[+] Successfully connected via '{prog_id}'.")
                 return True
             except Exception as e:
+                print(f"    [-] Connection failed for '{prog_id}': {e}")
                 last_error = e
                 continue
         
@@ -51,29 +52,28 @@ class AutoCADClient:
             return None
         start = self._normalize_point(start_point)
         end = self._normalize_point(end_point)
-        return self.model_space.AddLine(comtypes.automation.VARIANT(start), 
-                                        comtypes.automation.VARIANT(end))
+        return self.model_space.AddLine(start, end)
 
     def add_circle(self, center, radius):
         """Add a circle to the model space. Supports 2D and 3D center."""
         if not self.model_space:
             return None
         norm_center = self._normalize_point(center)
-        return self.model_space.AddCircle(comtypes.automation.VARIANT(norm_center), radius)
+        return self.model_space.AddCircle(norm_center, float(radius))
 
     def add_point(self, point):
         """Add a point to the model space. Supports 2D and 3D input."""
         if not self.model_space:
             return None
         norm_point = self._normalize_point(point)
-        return self.model_space.AddPoint(comtypes.automation.VARIANT(norm_point))
+        return self.model_space.AddPoint(norm_point)
 
     def add_arc(self, center, radius, start_angle, end_angle):
         """Add an arc to the model space. Supports 2D and 3D center."""
         if not self.model_space:
             return None
         norm_center = self._normalize_point(center)
-        return self.model_space.AddArc(comtypes.automation.VARIANT(norm_center), radius, start_angle, end_angle)
+        return self.model_space.AddArc(norm_center, float(radius), float(start_angle), float(end_angle))
 
     def add_spline(self, points):
         """Add a spline to the model space from a list of 2D or 3D points."""
@@ -84,7 +84,7 @@ class AutoCADClient:
             flattened_points = [coords for pt in normalized_points for coords in pt]
             start_tan = comtypes.automation.VARIANT([0.0, 0.0, 0.0])
             end_tan = comtypes.automation.VARIANT([0.0, 0.0, 0.0])
-            return self.model_space.AddSpline(comtypes.automation.VARIANT(flattened_points), start_tan, end_tan)
+            return self.model_space.AddSpline(flattened_points, start_tan, end_tan)
         except Exception as e:
             print(f"Error adding spline: {e}")
             return None
