@@ -109,6 +109,19 @@ class AutoCADClient:
             print(f"Error in add_spline: {e}")
             raise e
 
+    def create_layer(self, layer_name, color_index=7):
+        """Create a new layer with a specific color (default: 7 - White/Black)."""
+        try:
+            if not self.doc: return None
+            # Add method will return existing layer if it already exists
+            layer = self.doc.Layers.Add(layer_name)
+            layer.Color = int(color_index)
+            print(f"[+] Layer '{layer_name}' created/updated with color {color_index}.")
+            return layer
+        except Exception as e:
+            print(f"Error creating layer: {e}")
+            return None
+
     def get_layers_info(self):
         """Retrieve a list of layers and their properties."""
         try:

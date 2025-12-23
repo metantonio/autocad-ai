@@ -139,6 +139,25 @@ class LLMManager:
                         'required': ['layer_name', 'is_on'],
                     },
                 },
+            },
+            {
+                'type': 'function',
+                'function': {
+                    'name': 'create_layer',
+                    'description': 'Create a new layer with a specific name and optional color.',
+                    'parameters': {
+                        'type': 'object',
+                        'properties': {
+                            'layer_name': {'type': 'string', 'description': 'The name of the new layer'},
+                            'color': {
+                                'type': 'integer', 
+                                'description': 'AutoCAD Color Index (ACI). 1=Red, 2=Yellow, 3=Green, 4=Cyan, 5=Blue, 6=Magenta, 7=White/Black.',
+                                'default': 7
+                            },
+                        },
+                        'required': ['layer_name'],
+                    },
+                },
             }
         ]
 

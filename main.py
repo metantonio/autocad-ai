@@ -83,6 +83,10 @@ def main():
                             print(f"[*] Layer '{args['layer_name']}' successfully turned {status_str}.")
                         else:
                             print(f"[!] Failed to turn {status_str} the layer '{args['layer_name']}'.")
+                    elif func_name == 'create_layer':
+                        color = args.get('color', 7)
+                        cad.create_layer(args['layer_name'], color)
+                        print(f"[*] Layer '{args['layer_name']}' created with color {color}.")
                     else:
                         print(f"Unsupported command: {func_name}")
                 except Exception as step_error:
