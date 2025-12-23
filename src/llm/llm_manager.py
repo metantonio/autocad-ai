@@ -168,6 +168,39 @@ class LLMManager:
                         'required': ['layer_name'],
                     },
                 },
+            },
+            {
+                'type': 'function',
+                'function': {
+                    'name': 'rename_layer',
+                    'description': 'Rename an existing AutoCAD layer.',
+                    'parameters': {
+                        'type': 'object',
+                        'properties': {
+                            'old_name': {'type': 'string', 'description': 'The current name of the layer'},
+                            'new_name': {'type': 'string', 'description': 'The new name for the layer'},
+                        },
+                        'required': ['old_name', 'new_name'],
+                    },
+                },
+            },
+            {
+                'type': 'function',
+                'function': {
+                    'name': 'change_layer_color',
+                    'description': 'Change the color of an existing AutoCAD layer.',
+                    'parameters': {
+                        'type': 'object',
+                        'properties': {
+                            'layer_name': {'type': 'string', 'description': 'The name of the layer'},
+                            'color': {
+                                'type': 'integer', 
+                                'description': 'AutoCAD Color Index (ACI). 1=Red, 2=Yellow, 3=Green, 4=Cyan, 5=Blue, 6=Magenta, 7=White/Black.'
+                            },
+                        },
+                        'required': ['layer_name', 'color'],
+                    },
+                },
             }
         ]
 
@@ -176,7 +209,11 @@ class LLMManager:
         messages = [
             {
                 'role': 'system', 
-                'content': 'You are an expert AutoCAD assistant. Use the provided tools to fulfill the user request.'
+                'content': (
+                    'You are an expert AutoCAD assistant. Use the provided tools to fulfill the user request. '
+                    'IMPORTANT: If the user asks to draw a circle but does not provide the center coordinates or the radius, '
+                    'DO NOT call the tool. Instead, respond with a polite text message asking the user for the missing information.'
+                )
             },
             {'role': 'user', 'content': prompt}
         ]
@@ -186,23 +223,25 @@ class LLMManager:
             messages=messages,
             tools=self.get_tool_definitions(),
         )
-        tool_calls = response['message'].get('tool_calls', [])
+        
+        message = response.get('message', {})
+        content = message.get('content', '')
+        tool_calls = message.get('tool_calls', [])
         
         # Fallback: if no structured tool calls, check if content looks like one
-        if not tool_calls:
-            content = response['message'].get('content', '').strip()
-            if content.startswith('{') and content.endswith('}'):
+        if not tool_calls and content:
+            stripped_content = content.strip()
+            if stripped_content.startswith('{') and stripped_content.endswith('}'):
                 try:
-                    # Try to parse as a single tool call
-                    data = json.loads(content)
+                    data = json.loads(stripped_content)
                     if 'name' in data and 'arguments' in data:
                         tool_calls = [{'function': data}]
+                        content = "" # Clear content if it was actually a tool call
                 except:
                     pass
-            elif content.startswith('[') and content.endswith(']'):
+            elif stripped_content.startswith('[') and stripped_content.endswith(']'):
                 try:
-                    # Try to parse as a list of tool calls
-                    data = json.loads(content)
+                    data = json.loads(stripped_content)
                     if isinstance(data, list) and len(data) > 0:
                         potential_calls = []
                         for item in data:
@@ -210,10 +249,11 @@ class LLMManager:
                                 potential_calls.append({'function': item})
                         if potential_calls:
                             tool_calls = potential_calls
+                            content = "" # Clear content
                 except:
                     pass
 
-        return tool_calls
+        return tool_calls, content
 
 if __name__ == "__main__":
     manager = LLMManager()

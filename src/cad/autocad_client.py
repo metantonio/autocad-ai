@@ -132,6 +132,30 @@ class AutoCADClient:
             print(f"Error creating layer: {e}")
             return None
 
+    def rename_layer(self, old_name, new_name):
+        """Rename an existing layer."""
+        try:
+            if not self.doc: return False
+            layer = self.doc.Layers.Item(old_name)
+            layer.Name = new_name
+            print(f"[+] Layer '{old_name}' renamed to '{new_name}'.")
+            return True
+        except Exception as e:
+            print(f"Error renaming layer: {e}")
+            return False
+
+    def change_layer_color(self, layer_name, color_index):
+        """Change the color of an existing layer."""
+        try:
+            if not self.doc: return False
+            layer = self.doc.Layers.Item(layer_name)
+            layer.Color = int(color_index)
+            print(f"[+] Layer '{layer_name}' color changed to {color_index}.")
+            return True
+        except Exception as e:
+            print(f"Error changing layer color: {e}")
+            return False
+
     def get_layers_info(self):
         """Retrieve a list of layers and their properties."""
         try:

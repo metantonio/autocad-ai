@@ -40,10 +40,13 @@ def main():
                 break
                 
             print("Processing request...")
-            tool_calls = llm.process_prompt(user_input)
+            tool_calls, ai_content = llm.process_prompt(user_input)
             
             if not tool_calls:
-                print("LLM did not identify any CAD commands.")
+                if ai_content:
+                    print(f"\nAI: {ai_content}")
+                else:
+                    print("LLM did not identify any CAD commands.")
                 continue
                 
             print(f"Total steps to execute: {len(tool_calls)}")
@@ -91,6 +94,12 @@ def main():
                         color = args.get('color', 7)
                         cad.create_layer(args['layer_name'], color)
                         print(f"[*] Layer '{args['layer_name']}' created with color {color}.")
+                    elif func_name == 'rename_layer':
+                        cad.rename_layer(args['old_name'], args['new_name'])
+                        print(f"[*] Layer '{args['old_name']}' renamed to '{args['new_name']}'.")
+                    elif func_name == 'change_layer_color':
+                        cad.change_layer_color(args['layer_name'], args['color'])
+                        print(f"[*] Layer '{args['layer_name']}' color set to {args['color']}.")
                     else:
                         print(f"Unsupported command: {func_name}")
                 except Exception as step_error:
